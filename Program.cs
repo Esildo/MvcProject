@@ -24,14 +24,30 @@ app.UseDeveloperExceptionPage();
 app.UseStatusCodePages();
 app.UseStaticFiles();
 
-
 app.MapControllerRoute(
-            name: "pagination",
-            pattern: "Products/Page{productPage}",
-            defaults: new { Controller = "Product", action = "List" }
+    name: null,
+    pattern: "{category}/Page{productPage:int}",
+    defaults: new { controller = "Product", action = "List" }
 );
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Product}/{action=List}/{id?}");
+    name: null,
+    pattern:"Page{productPage:int}",
+    defaults: new { controller = "Product",action="List",productPage=1}
+);
+app.MapControllerRoute(
+    name:null,
+    pattern:"{category}",
+    defaults: new {controller = "Product", action = "List", productPage = 1}
+);
+app.MapControllerRoute(
+    name: null,
+    pattern: "",
+    defaults: new { controller = "Product", action = "List", productPage = 1 }
+);
+app.MapControllerRoute(
+    name: null,
+    pattern: "{controller}/{action}/{id?}"
+);
+
 SeedData.EnSurePopilated(app);
 app.Run();

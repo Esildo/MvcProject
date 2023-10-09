@@ -14,10 +14,11 @@ namespace WebPetProject.Controllers
             repository = repo;
         }
 
-        public ViewResult List(int productPage = 1 ) 
-            => View(new ProductListViewModel 
-            { 
+        public ViewResult List(string category, int productPage = 1)
+            => View(new ProductListViewModel
+            {
                 Products = repository.Products
+                    .Where(p => category == null || p.Category == category)
                     .OrderBy(p => p.ProductID)
                     .Skip((productPage - 1) * PageSize)
                     .Take(PageSize),
@@ -25,8 +26,10 @@ namespace WebPetProject.Controllers
                 {
                     CurrentPage = productPage,
                     ItemsPerPage = PageSize,
-                    TotalItems = repository.Products.Count()
-                }
+                    TotalItems = category == null ? repository.Products.Count() 
+                    : repository.Products.Where(p => p.Category == category).Count()
+                },
+                CurrentCategory = category
             });
     }
 }
