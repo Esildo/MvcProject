@@ -4,7 +4,7 @@ using System.Configuration;
 using WebPetProject.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-
+using Microsoft.Build.Framework;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,10 +16,14 @@ string? connection = builder.Configuration.GetConnectionString("SportStoreProduc
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connection));
 
+builder.Services.AddMemoryCache();
+builder.Services.AddSession();
+builder.Services.AddTransient<Cart>(sp => SessionCart.GetCart(sp));
+builder.Services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<IProductRepository, EFProductRepository>();
-
 var app = builder.Build();
 
+app.UseSession();
 app.UseDeveloperExceptionPage();
 app.UseStatusCodePages();
 app.UseStaticFiles();
